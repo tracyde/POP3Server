@@ -10,9 +10,11 @@ package org.twistedcode.ssw810.pop3;
 public class StateContext {
     private State myState;
     private Boolean runnable = true;
+    private MessageContainer messageContainer;
 
     public StateContext() {
         // Set initial state to AUTHORIZATION
+        messageContainer = new MessageContainer();
         setState(new StateAuthorization());
     }
 
@@ -34,5 +36,9 @@ public class StateContext {
 
     public void setRunnable(Boolean bool) {
         runnable = bool;
+    }
+
+    public void setMessageContainer(MessageContainer messageContainer) {
+        this.messageContainer = messageContainer;
     }
 }

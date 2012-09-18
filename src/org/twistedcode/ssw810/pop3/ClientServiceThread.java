@@ -26,7 +26,7 @@ public class ClientServiceThread extends Thread {
     }
 
     public void run() {
-        String response = null;
+        String response;
 
         // Obtain the input stream and the output stream for the socket
         BufferedReader in = null;
@@ -50,29 +50,27 @@ public class ClientServiceThread extends Thread {
             // Run in a loop until m_bRunThread is set to false
             while (sc.isRunnable()) {
                 // read incoming stream
+                // TODO need to change this to have parseCommand add commands to a queue which are then popped off for execution
                 response = sc.parseCommand(in.readLine());
-
-                if (response.equalsIgnoreCase("quit")) {
-                    // Special command. Quit this thread
-                    //m_bRunThread = false;
-                    System.out.print("Stopping client thread for client : " + m_clientID);
-                } else {
-                    // Echo it back to the client.
-                    sendResponse(out, response);
-                }
+                sendResponse(out, response);
             }
+
+            // Once outside the loop the thread will start closing
             sendResponse(out, OK + "Server closing connection" + CRLF);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             // Clean up
             try {
+                System.out.print("Stopping client thread for client : " + m_clientID);
                 in.close();
                 out.close();
                 m_clientSocket.close();
                 System.out.println("...Client Thread Stopped");
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                System.err.println(ioe.getMessage());
+            } catch (NullPointerException npe) {
+                System.err.println(npe.getMessage());
             }
         }
     }
